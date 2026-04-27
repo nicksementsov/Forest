@@ -39,6 +39,8 @@ private:
 	vk::raii::Instance instance = nullptr;
 	vk::raii::DebugUtilsMessengerEXT debugMessenger = nullptr;
 
+	vk::raii::PhysicalDevice physicalDevice = nullptr;
+
 	void initWindow() {
 		glfwInit();
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -50,6 +52,7 @@ private:
 	void initVulkan() {
 		createInstance();
 		setupDebugMessenger();
+		pickPhysicalDevice();
 	}
 
 	void createInstance() {
@@ -171,6 +174,20 @@ private:
 			.pfnUserCallback = &debugCallback};
 
 		debugMessenger = instance.createDebugUtilsMessengerEXT(debugUtilsMessengerCreateInfoEXT);
+	}
+
+	void pickPhysicalDevice() {
+		auto physicalDevices = instance.enumeratePhysicalDevices();
+
+		if (physicalDevices.empty())
+		{
+			throw std::runtime_error("Failed to find GPU with Vulkan support.");
+		}
+
+		for (physicalDevice : physicalDevices)
+		{
+			auto deviceProperties = physicalDevice.getProperties();
+		}
 	}
 };
 
