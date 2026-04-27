@@ -37,6 +37,7 @@ private:
 
 	vk::raii::Context context;
 	vk::raii::Instance instance = nullptr;
+	vk::raii::DebugUtilsMessengerEXT debugMessenger = nullptr;
 
 	void initWindow() {
 		glfwInit();
@@ -48,6 +49,7 @@ private:
 
 	void initVulkan() {
 		createInstance();
+		setupDebugMessenger();
 	}
 
 	void createInstance() {
@@ -62,7 +64,8 @@ private:
 
 		// Validation Layers
 		std::vector<char const*> requiredLayers;
-		if (enableValidationLayers) {
+		if (enableValidationLayers) 
+		{
 			requiredLayers.assign(validationLayers.begin(), validationLayers.end());
 		}
 
@@ -135,6 +138,39 @@ private:
 		}
 
 		return extensions;
+	}
+
+	static VKAPI_ATTR vk::Bool32 VKAPI_CALL debugCallback(
+		vk::DebugUtilsMessageSeverityFlagBitsEXT severity,
+		vk::DebugUtilsMessageTypeFlagsEXT type,
+		const vk::DebugUtilsMessengerCallbackDataEXT * pCallbackData,
+		void * pUserData) {
+		std::cerr << "validation layer: type " << to_string(type) << " msg: " << pCallbackData->pMessage << std::endl;
+
+		return vk::False;
+	}
+
+	void setupDebugMessenger() {
+		if (!enableValidationLayers)
+		{
+			return;
+		}
+
+		vk::DebugUtilsMessageSeverityFlagsEXT severityFlags(
+			vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | 
+			vk::DebugUtilsMessageSeverityFlagBitsEXT::eError);
+
+		vk::DebugUtilsMessageTypeFlagsEXT messageTypeFlags(
+			vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | 
+			vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance | 
+			vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation);
+
+		vk::DebugUtilsMessengerCreateInfoEXT debugUtilsMessengerCreateInfoEXT{
+			.messageSeverity = severityFlags,
+			.messageType     = messageTypeFlags,
+			.pfnUserCallback = &debugCallback};
+
+		debugMessenger = instance.createDebugUtilsMessengerEXT(debugUtilsMessengerCreateInfoEXT);
 	}
 };
 
