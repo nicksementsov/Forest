@@ -1,4 +1,4 @@
-CFLAGS = -std=c++20 -O2 -Wall
+CFLAGS = -std=c++20 -O2 -Wall -DNBDEBUG=1
 LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 
 bin/Forest: main.cpp

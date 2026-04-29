@@ -71,6 +71,8 @@ private:
 		pickPhysicalDevice();
 		createLogicalDevice();
 		createSwapChain();
+		createImageViews();
+		createGraphicsPipeline();
 	}
 
 	void createInstance() {
@@ -373,6 +375,26 @@ private:
 			}) ? vk::PresentModeKHR::eMailbox : vk::PresentModeKHR::eFifo;
 	}
 
+	void createImageViews() {
+		assert(swapChainImageViews.empty());
+
+		vk::ImageViewCreateInfo imageViewCreateInfo{
+			.viewType = vk::ImageViewType::e2D,
+			.format = swapChainSurfaceFormat.format,
+			.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1}
+		};
+
+		for (auto &image : swapChainImages)
+		{
+			imageViewCreateInfo.image = image;
+			swapChainImageViews.emplace_back(device, imageViewCreateInfo);
+		}
+	}
+
+	void createGraphicsPipeline() {
+
+	}
+
 	void mainLoop() {
 		while (!glfwWindowShouldClose(window)) {
 			glfwPollEvents();
@@ -389,6 +411,13 @@ int main()
 {
 	try
 	{
+		if (enableValidationLayers)
+		{
+			std::cout << "Debug On" << std::endl;
+		} else
+		{
+			std::cout << "Debug Off" << std::endl;
+		}
 		HelloTriangleApplication app;
 		app.run();
 	}
