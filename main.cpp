@@ -72,7 +72,7 @@ private:
 		createLogicalDevice();
 		createSwapChain();
 		createImageViews();
-		createGraphicsPipeline();
+		// createGraphicsPipeline();
 	}
 
 	void createInstance() {
@@ -402,6 +402,15 @@ private:
 	}
 
 	void cleanup() {
+		swapChainImageViews.clear();
+		swapChain = nullptr;
+		graphicsQueue = nullptr;
+		device = nullptr;
+		physicalDevice = nullptr;
+		surface = nullptr;
+		debugMessenger = nullptr;
+		instance = nullptr;
+
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
